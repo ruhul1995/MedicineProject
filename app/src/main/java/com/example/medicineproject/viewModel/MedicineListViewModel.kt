@@ -38,11 +38,6 @@ class MedicineListViewModel() : ViewModel() {
 
             override fun onResponse(call: Call<List<MedicineModel>?>, response: Response<List<MedicineModel>?>) {
                 var resource: List<MedicineModel>? = response.body()
-                var mylist = resource
-
-                //var listSmartRecomd : MutableList<MedicineModel> = arrayListOf()
-                //var listNotSmartRecomd : MutableList<MedicineModel> = arrayListOf()
-
                 for( i in resource!!.indices)
                 {
                     if(resource.get(i).smartRecommendation == true) {
@@ -54,11 +49,6 @@ class MedicineListViewModel() : ViewModel() {
                         medicineList.postValue(listNotSmartRecomd)
                     }
                 }
-
-                //medicineList.postValue(listNotSmartRecomd)
-
-
-
             }
 
             override fun onFailure(call: Call<List<MedicineModel>?>, t: Throwable) {
