@@ -1,23 +1,25 @@
 package com.example.medicineproject.viewModel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.medicineproject.adapters.MedicineListAdapter
-import com.example.medicineproject.model.ApiInterface
+import androidx.lifecycle.viewModelScope
+import com.example.medicineproject.Repository.MyRepository
 import com.example.medicineproject.model.MedicineModel
-import com.example.medicineproject.model.RetrofitInstance
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.lang.Exception
 
+
+sealed class Result<out R> {
+    data class Success<out T>(val data: T) : Result<T>()
+    data class Error(val exception: Exception) : Result<Nothing>()
+}
 class MedicineListViewModel() : ViewModel() {
 
-    private var medicineList: MutableLiveData<List<MedicineModel>> =  MutableLiveData()
-    private var medicineListSR : MutableLiveData<List<MedicineModel>> = MutableLiveData()
-    var listSmartRecomd : MutableList<MedicineModel> = arrayListOf()
-    var listNotSmartRecomd : MutableList<MedicineModel> = arrayListOf()
+    companion object {
+         var medicineList: MutableLiveData<List<MedicineModel>> =  MutableLiveData()
+         var medicineListSR : MutableLiveData<List<MedicineModel>> = MutableLiveData()
+    }
 
     fun MedicineListViewModel() {
         medicineList = MutableLiveData<List<MedicineModel>>()
@@ -26,36 +28,30 @@ class MedicineListViewModel() : ViewModel() {
     fun getMedicineListObservables(): MutableLiveData<List<MedicineModel>> {
         return medicineList
     }
-    fun getMedicineListObservablesForSR():MutableLiveData<List<MedicineModel>>
+    fun getMedicineListObservablesForSR(): MutableLiveData<List<MedicineModel>>
     {
         return medicineListSR
     }
-    fun makeApiCall() {
-        val apiInterface: ApiInterface? =
-            RetrofitInstance.retrofitInstance?.create(ApiInterface::class.java)
-        val call: Call<List<MedicineModel>>? = apiInterface?.getMedicineList("4990224")
-        call?.enqueue(object : Callback<List<MedicineModel>?> {
 
-            override fun onResponse(call: Call<List<MedicineModel>?>, response: Response<List<MedicineModel>?>) {
-                var resource: List<MedicineModel>? = response.body()
-                for( i in resource!!.indices)
-                {
-                    if(resource.get(i).smartRecommendation == true) {
-                        listSmartRecomd.addAll(listOf(resource[i]))
-                        medicineListSR.postValue(listSmartRecomd)
-                    }
-                    else {
-                        listNotSmartRecomd.addAll(listOf(resource[i]))
-                        medicineList.postValue(listNotSmartRecomd)
-                    }
-                }
+    var myRepository: MyRepository = MyRepository()
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            // Make the network call and suspend execution until it finishes
+            val result = try {
+                myRepository.makeApiCall()
+            }
+            catch (e : Exception){
+                Result.Error(Exception("Network request failed"))
             }
 
-            override fun onFailure(call: Call<List<MedicineModel>?>, t: Throwable) {
-                Log.d("error : ", "Api call was not successfull")
-                medicineList?.postValue(null)
+            // Display result of the network request to the user
+            when(result){
+                is Result.Success<*> -> // Happy Path
+                    Result.Success("Successfully Called API")
+                else-> // Show error in UI
+                    Result.Error(Exception("Not Data Available"))
             }
-        })
+        }
     }
-
 }

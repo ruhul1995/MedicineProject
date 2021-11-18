@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.medicineproject.MainActivity.Companion.viewModel
 import com.example.medicineproject.R
 import com.example.medicineproject.adapters.MedicineListAdapter
 import com.example.medicineproject.model.MedicineModel
@@ -20,7 +21,6 @@ class RecommendationFragment : Fragment() {
 
     private  var  medicineModelList: List<MedicineModel> = emptyList()
     private lateinit var adapter: MedicineListAdapter
-    private lateinit var viewModel: MedicineListViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,7 +47,7 @@ class RecommendationFragment : Fragment() {
         adapter.setMedicineList(medicineModelList)
         recyclerViewlist.adapter = adapter
 
-        viewModel = ViewModelProvider(this)[MedicineListViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[MedicineListViewModel::class.java]
         viewModel.getMedicineListObservablesForSR().observe(viewLifecycleOwner,
             Observer<List<MedicineModel>?>
             { medicineModels: List<MedicineModel>? ->
@@ -59,8 +59,5 @@ class RecommendationFragment : Fragment() {
                     Log.d("error : ", viewModel.toString())
                 }
             })
-
-        viewModel.makeApiCall()
     }
-
 }

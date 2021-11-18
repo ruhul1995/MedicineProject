@@ -29,13 +29,13 @@ class MedicineListAdapter(private var context: Context, private var medicineList
 
         var obj: MedicineModel = medicineList!![position]
 
-        holder.mMedicineName.setText(obj.productName)
-        holder.mQuantity.setText(obj.displayText)
-        holder.mSchemes.setText(obj.schemeLabelForRetailer)
-        holder.mPlaceName.setText(obj.distributorName)
-        holder.mCompanyName.setText(obj.manufacturerName)
-        holder.mDiscountPrice.setText("₹ "+obj.ptr.toString())
-        holder.mMaxRetailPrice.setText("₹ "+obj.mrp.toString())
+        holder.mMedicineName.text = obj.productName
+        holder.mQuantity.text = obj.displayText
+        holder.mSchemes.text = obj.schemeLabelForRetailer
+        holder.mPlaceName.text = obj.distributorName
+        holder.mCompanyName.text = obj.manufacturerName
+        holder.mDiscountPrice.text = "₹ "+obj.ptr.toString()
+        holder.mMaxRetailPrice.text = "₹ "+obj.mrp.toString()
         holder.mOrderQuantity.setText("Qty "+obj.stock.toString())
 
         val medicineImagePath =  obj.productUrl

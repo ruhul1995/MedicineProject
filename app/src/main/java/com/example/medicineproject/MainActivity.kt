@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.example.medicineproject.adapters.MedicineListAdapter
@@ -16,10 +17,11 @@ class MainActivity : AppCompatActivity() {
 
     private  lateinit var tabLayout: TabLayout
     private lateinit var viewPager: ViewPager
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        viewModel = ViewModelProvider(this)[MedicineListViewModel::class.java]
 
         tabLayout = findViewById(R.id.tabLayout)
         viewPager = findViewById(R.id.viewPager)
@@ -41,5 +43,8 @@ class MainActivity : AppCompatActivity() {
 
         })
 
+    }
+    companion object{
+        lateinit var viewModel: MedicineListViewModel
     }
 }
